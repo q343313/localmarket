@@ -1,0 +1,91 @@
+{
+  "project_info": {
+    "project_number": "831267463735",
+    "firebase_url": "https://snapsell-1ca27-default-rtdb.firebaseio.com",
+    "project_id": "snapsell-1ca27",
+    "storage_bucket": "snapsell-1ca27.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831267463735:android:9f99e3596429a534d315b2",
+        "android_client_info": {
+          "package_name": "com.example.localmarket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "831267463735-a61habr719bfpt01ooo9bvjotoesnv10.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPYtBE9CbQIxLKTJXpxO1QGKfiXdxKYgE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "831267463735-a61habr719bfpt01ooo9bvjotoesnv10.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "831267463735-pv271l67nqrdi3qgpk3nk68uadtg21sp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.snapsell"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831267463735:android:3dfa611ce2735cf2d315b2",
+        "android_client_info": {
+          "package_name": "com.example.snapsell"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "831267463735-14q41evms5qt2jlu4bpjcua55pllc8u5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.snapsell",
+            "certificate_hash": "ca57036151bc8d90a9ac406b38528d5bf7bd93ea"
+          }
+        },
+        {
+          "client_id": "831267463735-a61habr719bfpt01ooo9bvjotoesnv10.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPYtBE9CbQIxLKTJXpxO1QGKfiXdxKYgE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "831267463735-a61habr719bfpt01ooo9bvjotoesnv10.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "831267463735-pv271l67nqrdi3qgpk3nk68uadtg21sp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.snapsell"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

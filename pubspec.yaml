@@ -1,0 +1,124 @@
+name: localmarket
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+dependencies:
+  flutter:
+    sdk: flutter
+  intl: ^0.20.2
+
+  # Dependency injections
+  get_it: ^8.2.0
+
+  # Snack bar Library
+  another_flushbar: ^1.12.32
+  awesome_snackbar_content: 0.1.7
+  fluttertoast: ^8.2.12
+
+  font_awesome_flutter: ^10.9.1
+  awesome_navigation_bar: ^1.0.4
+
+  # Local Database
+  shared_preferences: ^2.5.3
+
+  # Create in models
+  json_annotation:
+  freezed_annotation:
+
+  # For Notifications
+  flutter_local_notifications: ^19.4.1
+
+  # For animations
+  flutter_animate: ^4.5.2
+  lottie: ^3.3.1
+
+  # State Management
+  bloc: ^9.0.0
+  flutter_bloc: ^9.1.1
+  flutter_riverpod: ^3.0.0
+  get: ^4.7.2
+
+  # Firebase Library
+  firebase_core: ^4.1.0
+  google_sign_in: ^7.1.1
+  firebase_database: ^12.0.1
+  cloud_firestore: ^6.0.1
+  firebase_messaging: ^16.0.1
+  auto_size_text: ^3.0.0
+  country_picker: ^2.0.27
+  firebase_auth: ^6.0.2
+
+
+  curved_navigation_bar: ^1.0.6
+  image_picker: ^1.2.0
+  sqflite: ^2.4.2
+  cached_network_image: ^3.4.1
+  path_provider: ^2.0.15
+  flutter_cache_manager:
+  http: ^1.5.0
+
+  smooth_page_indicator: ^1.2.1
+  introduction_screen: ^4.0.0
+  google_mobile_ads: ^6.0.0
+
+
+
+
+# Dev packages in your apps
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.6
+  freezed: ^3.2.3
+  build_runner:
+  json_serializable:
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/pngegg (9).png"
+
+flutter_native_splash:
+  android: true
+  ios: true
+  color: "#56ab2f"
+  image: assets/images/pngegg (9).png
+  android_12:
+    color: "#56ab2f"
+    image: assets/images/pngegg (9).png
+
+flutter:
+
+  uses-material-design: true
+
+  # Assets area for images and lottie and icons
+
+  assets:
+    - assets/images/
+
+  # Set fonts for your app
+
+  fonts:
+    - family: heading
+      fonts:
+        - asset: assets/fonts/CascadiaCode-Bold.ttf
+
+    - family: title
+      fonts:
+        - asset: assets/fonts/CascadiaCode-SemiBold.ttf
+
+    - family: body_c
+      fonts:
+        - asset: assets/fonts/CascadiaCode-Regular.ttf
+
+    - family: body_p
+      fonts:
+        - asset: assets/fonts/SueEllenFrancisco-Regular.ttf
+
