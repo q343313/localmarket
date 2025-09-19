@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:localmarket/config/components/shimerwidget.dart';
 import 'package:localmarket/riverpad/googleAdsRiverpad/googleAdsProvider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../allpaths.dart';
 import '../../../../config/components/customStore.dart';
 import '../../../../config/components/customcchemanager.dart';
@@ -21,39 +23,30 @@ class _ShopingCartScreenState extends ConsumerState<ShopingCartScreen> {
     Future((){
       ref.read(favoriteProvider.notifier).refreshFavorites();
     });
-    super.initState();
     final adsNotifier = ref.read(googleAdsProvider.notifier);
     adsNotifier.initializeBannerAd();
     adsNotifier.initializeInterstitialAd();
     adsNotifier.initializeRewardedAd();
-  }
+    super.initState();
 
+  }
 
   @override
   Widget build(BuildContext context) {
     final database = ref.watch(firebasedata);
     final profile = ref.watch(profileproviders);
-    final ads  = ref.watch(googleAdsProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Products",
         ),
-        actions: [
-          IconButton(onPressed: ()async{
-            if(ads.isInterstitialLoaded){
-              ads.interstitialAd?.show();
-            }else{
-              ref.read(googleAdsProvider.notifier).initializeInterstitialAd();
-            }
-          }, icon: Icon(Icons.ads_click))
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Center(
           child: Column(
             children: [
+              SizedBox(height: 10,),
               Consumer(builder: (context,ref,_){
                 final ads = ref.watch(googleAdsProvider);
                return ads.isBannerLoaded?Container(
@@ -63,6 +56,7 @@ class _ShopingCartScreenState extends ConsumerState<ShopingCartScreen> {
                )
                    :Container();
               }),
+              SizedBox(height: 10,),
               database.when(
                 data: (value) {
                   final products = value.docs.expand((e) => e["product"]).toList();
@@ -100,22 +94,24 @@ class _ShopingCartScreenState extends ConsumerState<ShopingCartScreen> {
                   );
                 },
                 error: (error, stack) => Text(error.toString()),
-                loading: () => const CupertinoActivityIndicator(color: CupertinoColors.activeBlue),
+                loading: () => ProductShimmer(),
               )
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).brightness== Brightness.dark
+        ? AppColors.secondaryButtonDarkMode
+        : AppColors.secondaryButtonLightMode,
         onPressed: () {
           addproductdialog(context, ref);
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add,color: Colors.white,),
       ),
     );
   }
 }
-
 
 
 

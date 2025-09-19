@@ -1,18 +1,54 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:localmarket/riverpad/googleAdsRiverpad/googleAdsProvider.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../allpaths.dart';
 import '../../../../config/components/customcchemanager.dart';
+import 'package:http/http.dart'as http;
+import 'dart:typed_data';
 
-class ProductDetails extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+
+final wiatprovider= StateProvider((ref)=>true);
+class ProductDetails extends ConsumerStatefulWidget {
+  const ProductDetails({super.key,required this.product,required this.user});
   final dynamic product;
   final dynamic user;
 
-  ProductDetails({super.key, required this.product,required this.user});
+  @override
+  ConsumerState<ProductDetails> createState() => _ProductDetailsState();
+}
 
+class _ProductDetailsState extends ConsumerState<ProductDetails> {
   final PageController _pageController = PageController();
 
   @override
+  void initState() {
+    downloadimafge(ref);
+    super.initState();
+  }
+
+  XFile ?xfile;
+
+  downloadimafge(WidgetRef ref)async{
+    Future((){
+      ref.read(wiatprovider.notifier).state = false;
+    });
+     xfile = await getShareableFile(widget.product["image"][0]);
+     setState(() {});
+    Future((){
+      ref.read(wiatprovider.notifier).state = true;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final images = List<String>.from(product["image"]);
+    final images = List<String>.from(widget.product["image"]);
     final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -20,10 +56,21 @@ class ProductDetails extends StatelessWidget {
         title: const Text("Product Details"),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {},
-          ),
+          Consumer(builder: (context,ref,_){
+            final wwat = ref.watch(wiatprovider);
+            return Visibility(
+              visible: wwat,
+                child: IconButton(
+              icon:Icon(Icons.share),
+              onPressed: ()async{
+                if(wwat){
+                  final message = "Product: ${widget.product["name"]}\nPrice: ${widget.product["price"]}\nLocation: ${widget.product["productlocation"]}";
+                  await Share.shareXFiles([xfile??await getShareableFile(widget.product["image"][0]),], text: message);
+                }
+              },
+            ));
+          }),
+          SizedBox(width: 10,)
         ],
       ),
       body: SingleChildScrollView(
@@ -34,14 +81,14 @@ class ProductDetails extends StatelessWidget {
             children: [
               SizedBox(
                 height: 300,
-                child: buildproductimage(_pageController, images,user,product),
+                child: buildproductimage(_pageController, images,widget.user,widget.product),
               ),
 
               const SizedBox(height: 20),
-              sectionTitle(product["name"]),
+              sectionTitle(widget.product["name"]),
               const SizedBox(height: 8),
               Text(
-                "${product["price"]} PKR",
+                "${widget.product["price"]} PKR",
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -50,13 +97,13 @@ class ProductDetails extends StatelessWidget {
               ),
 
               const SizedBox(height: 12),
-              buildproductmore(Icon(Icons.branding_watermark), product["company"]),
+              buildproductmore(Icon(Icons.branding_watermark),widget.product["company"]),
               const SizedBox(height: 12),
-             buildproductmore(Icon(Icons.location_on,color: Colors.red,), product["productlocation"]),
+              buildproductmore(Icon(Icons.location_on,color: Colors.red,),widget.product["productlocation"]),
               const SizedBox(height: 20),
               sectionTitle("About this Product"),
               const SizedBox(height: 8),
-             sectionBox(product["detail"], context, 23),
+              sectionBox(widget.product["detail"], context, 23),
               const SizedBox(height: 80), // Space for bottom bar
             ],
           ),
@@ -64,10 +111,54 @@ class ProductDetails extends StatelessWidget {
       ),
 
       // 🔹 Sticky Bottom Bar
-      bottomNavigationBar: buildnavigationbuttons(context,user,product),
+      bottomNavigationBar: buildnavigationbuttons(context,widget.user,widget.product),
     );
   }
 }
+
+
+
+
+
+// Future<void> saveNetworkImageWithProgress(String imageUrl, {Function(double)? onProgress}) async {
+//   try {
+//     // 1️⃣ Request permission
+//     var status = await Permission.storage.request();
+//     if (!status.isGranted) return;
+//
+//     final dio = Dio();
+//
+//     // 2️⃣ Download image into memory with progress
+//     final response = await dio.get<List<int>>(
+//       imageUrl,
+//       options: Options(responseType: ResponseType.bytes),
+//       onReceiveProgress: (received, total) {
+//         if (total != -1) {
+//           double progress = received / total;
+//           if (onProgress != null) onProgress(progress);
+//           print("Downloading: ${(progress * 100).toStringAsFixed(0)}%");
+//         }
+//       },
+//     );
+//
+//     final Uint8List bytes = Uint8List.fromList(response.data!);
+//
+//     // 3️⃣ Save to gallery
+//     final result = await ImageGallerySaver.saveImage(
+//       bytes,
+//       quality: 100,
+//       name: "my_image_${DateTime.now().millisecondsSinceEpoch}",
+//     );
+//
+//     if (result['isSuccess']) {
+//       print("✅ Image saved to gallery!");
+//     } else {
+//       print("❌ Failed to save image");
+//     }
+//   } catch (e) {
+//     print("Error saving image: $e");
+//   }
+// }
 
 Widget buildproductimage(controller,List<String>images,user,product){
   return Stack(
@@ -175,39 +266,57 @@ Widget buildnavigationbuttons(BuildContext context,dynamic user,product){
               ),
             );
           } else {
-            return Expanded(
-              child: OutlinedButton(
-                onPressed: () => ref.read(craftProvider.notifier).toggleFavorite(productMap, userMap),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+            return Consumer(builder: (context,ref,_){
+              return  Expanded(
+                child: OutlinedButton(
+                  onPressed: (){
+                    final ads = ref.watch(googleAdsProvider);
+                    if(ads.isRewardedLoaded){
+                      ref.read(googleAdsProvider.notifier).showRewardedAd(onUserEarnedReward: () { });
+                    }else{
+                      ref.read(googleAdsProvider.notifier).initializeRewardedAd();
+                    }
+                    ref.read(craftProvider.notifier).toggleFavorite(productMap, userMap);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
+                  child: const Text("Add to Cart", style: TextStyle(fontFamily: "title", fontSize: 16)),
                 ),
-                child: const Text("Add to Cart", style: TextStyle(fontFamily: "title", fontSize: 16)),
-              ),
-            );
+              );
+            });
           }
         }),
 
         const SizedBox(width: 12),
         Expanded(
-          child: ElevatedButton(
+          child: Consumer(builder: (context,ref,_){
+            return ElevatedButton(
             onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ProfileDetail(user: user)));
+              final ads = ref.watch(googleAdsProvider);
+              if(ads.isInterstitialLoaded){
+                ads.interstitialAd?.show();
+              }else{
+                ref.read(googleAdsProvider.notifier).initializeInterstitialAd();
+              }
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ProfileDetail(user: user)));
             },
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              backgroundColor: Colors.blue,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8)),
+            backgroundColor: Colors.blue,
             ),
             child: const Text(
-              "Buy Now",
-              style: TextStyle(color: Colors.white,fontFamily: "title",fontSize: 16),
+            "Buy Now",
+            style: TextStyle(color: Colors.white,fontFamily: "title",fontSize: 16),
             ),
-          ),
-        ),
+            );
+  },
+        ),)
       ],
     ),
   );
@@ -229,177 +338,64 @@ Widget buildproductmore(Icon icon,String title){
   );
 }
 
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:flutter/material.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:localmarket/config/domians/appcolors.dart';
-//
-//
-// class ProductDetails extends StatelessWidget {
-//   final dynamic product;
-//
-//   const ProductDetails({super.key, required this.product});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final images = List<String>.from(product["image"]);
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Product Details",),
-//         centerTitle: true,
-//         leading: IconButton(onPressed: ()=>Navigator.pop(context), icon: Icon(Icons.arrow_back_sharp,color: Colors.white,)),
-//         backgroundColor: Colors.transparent,
-//         elevation: 0,
-//         actions: [
-//           IconButton(
-//             icon: const Icon(Icons.share,color: Colors.blue,),
-//             onPressed: () {},
-//           ),
-//           SizedBox(width: 8,),
-//         ],
-//       ),
-//       extendBodyBehindAppBar: true, // Makes the app bar transparent
-//       body: SingleChildScrollView(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
+Future<XFile> getShareableFile(String? url, {String fallbackAsset = "assets/images/ec.png"}) async {
+  try {
+    if (url != null) {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+        final tempDir = await getTemporaryDirectory();
+        final file = File('${tempDir.path}/image.jpg');
+        await file.writeAsBytes(bytes);
+        return XFile(file.path);
+      }
+    }
+  } catch (e) {
+    print("Error downloading image: $e");
+  }
+
+  final byteData = await rootBundle.load(fallbackAsset);
+  final tempDir = await getTemporaryDirectory();
+  final file = File('${tempDir.path}/fallback_image.jpg');
+  await file.writeAsBytes(byteData.buffer.asUint8List());
+  return XFile(file.path);
+}
+
+
+
+// void showShareOptions(BuildContext context, XFile xfile, String productName, String price, String location) {
+//   showModalBottomSheet(
+//     context: context,
+//     builder: (BuildContext context) {
+//       return Container(
+//         padding: EdgeInsets.all(20),
+//         child: Wrap(
 //           children: [
-//             buildProductImages(images),
+//             ListTile(
+//               leading: Icon(Icons.messenger, color: Colors.green),
+//               title: Text('Share via WhatsApp'),
+//               onTap: () async {
 //
-//             Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text(
-//                     product["name"],
-//                     style: TextStyle(fontSize: 20,fontFamily: "body_c")
-//                   ),
-//                   const SizedBox(height: 8),
-//                   Text(
-//                     "${product["price"]} PKR",
-//                     style: TextStyle(fontSize: 20,fontFamily: "body_c")
-//                   ),
-//                   const SizedBox(height: 16),
-//
-//                   // --- Details Table Section ---
-//                   _buildDetailRow("Company", product["company"], context),
-//                   _buildDetailRow("Location", product["productlocation"], context),
-//
-//                   const SizedBox(height: 24),
-//
-//                   // --- Description Section ---
-//                   _sectionTitle("About this product"),
-//                   const SizedBox(height: 8),
-//                   _sectionText(product["detail"], context),
-//                 ],
-//               ),
+//               },
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.email),
+//               title: Text('Share via Email'),
+//               onTap: () async {
+//                 final message = "Product: $productName\nPrice: $price\nLocation: $location";
+//                 await Share.shareXFiles([xfile], text: message);
+//               },
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.copy),
+//               title: Text('Copy Link'),
+//               onTap: () {
+//                 // Copy product link to clipboard
+//               },
 //             ),
 //           ],
 //         ),
-//       ),
-//       floatingActionButton: _buildBottomBar(context),
-//       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-//     );
-//   }
-//
-//   Widget _buildBottomBar(BuildContext context) {
-//     return Padding(padding: EdgeInsets.symmetric(horizontal: 18),
-//     child: SizedBox(
-//       width: double.infinity,
-//       child: ElevatedButton(onPressed: (){}
-//           , child: Row(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               FaIcon(FontAwesomeIcons.buyNLarge,color: Colors.white,),
-//               SizedBox(width: 5,),
-//               Text("Buy",style: TextStyle(fontFamily: "title",
-//               fontSize: 23,
-//               color: Colors.white),)
-//             ],
-//           )),
-//     ),);
-//   }
-//
-//   Widget _buildDetailRow(String title, String value, BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 4.0),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: [
-//           Text(
-//             title,
-//             style: TextStyle(fontSize: 18,fontFamily: "body_c",color: Colors.blue)
-//           ),
-//           Text(
-//             value,
-//             style: TextStyle(fontFamily: "body_p",fontSize: 20,)
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget buildProductImages(List<String> images) {
-//     return SizedBox(
-//       height: 400, // Make the image section taller
-//       child: Stack(
-//         children: [
-//           PageView.builder(
-//             itemCount: images.length,
-//             itemBuilder: (context, index) {
-//               return CachedNetworkImage(
-//                 imageUrl: images[index],
-//                 fit: BoxFit.cover,
-//                 width: double.infinity,
-//                 height: double.infinity,
-//                 placeholder: (context, url) =>
-//                 const Center(child: CircularProgressIndicator()),
-//                 errorWidget: (context, url, error) => const Icon(Icons.error),
-//               );
-//             },
-//           ),
-//           Positioned(
-//             top: 80,
-//             right: 20,
-//             child: CircleAvatar(
-//               radius: 20,
-//               backgroundColor: Colors.black45,
-//               child: IconButton(
-//                 icon: const Icon(Icons.favorite_border, color: Colors.white, size: 24),
-//                 onPressed: () {
-//                   // Handle favorite button tap
-//                 },
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _sectionTitle(String text) {
-//     return Text(
-//       text,
-//       style: const TextStyle(
-//         fontSize: 18,
-//         fontWeight: FontWeight.bold,
-//         fontFamily: "title",
-//         color: Colors.blue
-//       ),
-//     );
-//   }
-//
-//   Widget _sectionText(String text, BuildContext context) {
-//     return Text(
-//       text,
-//       style: TextStyle(
-//         fontSize: 22,
-//         fontFamily: "body_p",
-//         color: Theme.of(context).brightness == Brightness.dark
-//         ? AppColors.secondaryTextDarkMode
-//         :AppColors.secondaryTextLightMode,
-//         height: 1.5,
-//       ),
-//     );
-//   }
+//       );
+//     },
+//   );
 // }

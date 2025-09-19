@@ -13,14 +13,14 @@ final googleAdsProvider = StateNotifierProvider<AdsNotifier, AdsState>(
 class AdsNotifier extends StateNotifier<AdsState> {
   AdsNotifier() : super(AdsState());
 
-  late BannerAd _bannerAd;
+  late BannerAd bannerAds;
   late InterstitialAd _interstitialAd;
   late RewardedAd? _rewardedAd;
 
   /// Initialize Banner Ad
   void initializeBannerAd()async{
-    _bannerAd = BannerAd(size: AdSize.banner
-        , adUnitId: AdsHelpers.getnavads()
+    bannerAds = BannerAd(size: AdSize.banner
+        , adUnitId:"ca-app-pub-3940256099942544/6300978111"
         , listener: BannerAdListener(
             onAdLoaded: (ad){
               state  = state.copyWith(isBannerLoaded: true);
@@ -33,8 +33,8 @@ class AdsNotifier extends StateNotifier<AdsState> {
         ),
         request: AdRequest());
 
-    await _bannerAd?.load();
-    state = state.copyWith(bannerAd: _bannerAd);
+    await bannerAds.load();
+    state = state.copyWith(bannerAd: bannerAds);
   }
 
   /// Initialize Interstitial Ad
@@ -137,7 +137,7 @@ class AdsNotifier extends StateNotifier<AdsState> {
   /// Dispose Ads
   @override
   void dispose() {
-    _bannerAd?.dispose();
+    bannerAds?.dispose();
     _interstitialAd?.dispose();
     _rewardedAd?.dispose();
     super.dispose();

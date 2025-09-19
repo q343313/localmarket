@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../allpaths.dart';
 
 class ProfileDetail extends ConsumerWidget {
@@ -45,11 +47,66 @@ class ProfileDetail extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
-        onPressed: (){},
+        onPressed: (){
+          showCallOptions(context, user["userphone"]);
+        },
       child: Icon(Icons.messenger,size: 40,color: Colors.white,),),
     );
   }
 }
+
+void launchPhoneCall(String phoneNumber) async {
+  final Uri url = Uri(scheme: 'tel', path: phoneNumber);
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url);
+  } else {
+    print('Could not launch $phoneNumber');
+  }
+}
+
+Future<void> openWhatsApp(String phoneNumber, {String message = ''}) async {
+  final cleanedNumber = phoneNumber.replaceAll('+', ''); // WhatsApp format
+  final Uri url = Uri.parse('https://wa.me/$cleanedNumber?text=${Uri.encodeFull(message)}');
+  try {
+    await launchUrl(url, mode: LaunchMode.externalApplication);
+  } catch (e) {
+    print('Could not open WhatsApp: $e');
+  }
+}
+
+void showCallOptions(BuildContext context, String phoneNumber) {
+  showModalBottomSheet(
+    backgroundColor: Theme.of(context).brightness == Brightness.dark
+    ? AppColors.scaffoldDarkMode
+    : AppColors.scaffoldLightMode,
+    context: context,
+    builder: (_) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.call,color: Colors.blue,),
+            title: Text('Call',style: TextStyle(fontFamily: "title"),),
+            onTap: () {
+              launchPhoneCall(phoneNumber);
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.chat,color: Colors.green,),
+            title: Text('WhatsApp',style: TextStyle(fontFamily: "title"),),
+            onTap: () {
+              openWhatsApp(phoneNumber);
+              Navigator.pop(context);
+            },
+          ),
+          SizedBox(height: 10,)
+        ],
+      );
+    },
+  );
+}
+
 
 Widget buildyourownwidget(BuildContext context,user,profile){
   return user["useremail"] == profile.value

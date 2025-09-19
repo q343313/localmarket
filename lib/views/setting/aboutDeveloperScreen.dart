@@ -1,6 +1,8 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:localmarket/allpaths.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutDeveloperScreen extends StatelessWidget {
   const AboutDeveloperScreen({super.key});
@@ -135,6 +137,9 @@ class AboutDeveloperScreen extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: InkWell(
+        onTap: ()=>showCallOptions(context, "+923182586785"),
+          child: Image(image: AssetImage("assets/images/what.png"),width: 60,height: 60,)),
     );
   }
 
@@ -150,5 +155,15 @@ class AboutDeveloperScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+
+void mywhatsapp(String phonenumber)async{
+  final Uri uri =  Uri(scheme: "tel",path: phonenumber);
+  if(await launchUrl(uri)){
+    await launchUrl(uri);
+  }else{
+    print("failed to get phobe");
   }
 }

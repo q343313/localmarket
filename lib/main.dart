@@ -54,6 +54,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final thememo = ref.watch(themeproviders);
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       navigatorKey: navigatorkey,
       title: "Ecomerace App",
       theme: AppThemes.lightthemedata,

@@ -1,5 +1,6 @@
 
 
+import 'package:flutter/cupertino.dart';
 import 'package:localmarket/riverpad/firebaseriverpad/profileproviders.dart';
 import '../../../../allpaths.dart';
 import '../../../../config/components/customcchemanager.dart';
@@ -28,15 +29,10 @@ class _ProfilescreensState extends ConsumerState<Profilescreens> {
         centerTitle: true,
         title: Text("My Profile",),
       ),
-      body: StreamBuilder(
-        stream: collection,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("No Profile Data Found"));
-          }
-          final data = snapshot.data!.docs;
+      body:Consumer(builder: (context,ref,_){
+        final firebasedat= ref.watch(firebasedata);
+       return firebasedat.when(data: (value){
+           final data = value.docs;
           final userprofile = data
               .where((e) => e["useremail"] == email)
               .toList();
@@ -76,20 +72,20 @@ class _ProfilescreensState extends ConsumerState<Profilescreens> {
                 sectionTitle("Your Cart"),
                 SizedBox(height: 30,),
                 SizedBox(height: 250,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: user["craft"].length,
-                itemBuilder: (context,index){
-                    final product = user["craft"][index]["product"];
-                    final emailss = user["craft"][index]["useremail"];
-                    final newuserr = data.where((e)=>e["useremail"] == emailss).toList();
-                  return buildProductCardCraft(context, product, newuserr[0]);
-                },),)
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: user["craft"].length,
+                    itemBuilder: (context,index){
+                      final product = user["craft"][index]["product"];
+                      final emailss = user["craft"][index]["useremail"];
+                      final newuserr = data.where((e)=>e["useremail"] == emailss).toList();
+                      return buildProductCardCraft(context, product, newuserr[0]);
+                    },),)
               ],
             ),
           );
-        },
-      ),
+        }, error: (eeir,staa)=>Text(eeir.toString()), loading: ()=>Center(child:CupertinoActivityIndicator(color: Colors.blue,),));
+      }),
     );
   }
 

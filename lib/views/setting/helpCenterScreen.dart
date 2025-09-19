@@ -3,6 +3,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:localmarket/allpaths.dart';
 
 class HelpCenterScreen extends StatelessWidget {
   const HelpCenterScreen({super.key});
@@ -76,7 +77,9 @@ class HelpCenterScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.call, color: Colors.green),
               title: const Text("Phone Support",style: TextStyle(fontFamily: "body_c"),),
-              subtitle: const Text("+92 318 2586785",style: TextStyle(fontFamily: "body_c",color: Colors.blue),),
+              subtitle:  InkWell(
+                onTap: ()=>launchPhoneCall("+923182586785"),
+                  child: Text("+92 318 2586785",style: TextStyle(fontFamily: "body_c",color: Colors.blue),)),
               onTap: () {
               },
             ),
