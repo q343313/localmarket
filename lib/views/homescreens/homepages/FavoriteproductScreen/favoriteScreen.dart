@@ -56,8 +56,7 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 5,
                   crossAxisSpacing: 5,
-                  childAspectRatio: 0.9,
-                  children: userdata
+                  childAspectRatio:0.76,                  children: userdata
                       .map((e) => buildFavorProductCard(context, e))
                       .toList(),
                 ),

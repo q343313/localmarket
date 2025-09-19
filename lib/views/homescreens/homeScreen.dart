@@ -49,11 +49,11 @@ class _Homescreens extends ConsumerState<Homescreens>{
               final userdata = value.docs.where((e)=>e["useremail"] == email.value).toList();
               final usernotif = userdata[0]["nocount"];
               if(usernotif == 0){
-                return NavigationDestination(icon: Icon(Icons.notifications), label: "notification",selectedIcon: Icon(Icons.notifications),);
+                return NavigationDestination(icon: Icon(Icons.notifications), label: "updates",selectedIcon: Icon(Icons.notifications),);
               }else{
                 return Stack(
                   children: [
-                    NavigationDestination(icon: Icon(Icons.notifications), label: "notification",selectedIcon: Icon(Icons.notifications),),
+                    NavigationDestination(icon: Icon(Icons.notifications), label: "updates",selectedIcon: Icon(Icons.notifications),),
                     Positioned(
                       top:0,
                         right:10,
@@ -65,7 +65,7 @@ class _Homescreens extends ConsumerState<Homescreens>{
                   ],
                 );
               }
-            }, error: (err,val)=>Text(err.toString()), loading: ()=> NavigationDestination(icon: Icon(Icons.notifications), label: "notification",selectedIcon: Icon(Icons.notifications)),),
+            }, error: (err,val)=>Text(err.toString()), loading: ()=> NavigationDestination(icon: Icon(Icons.notifications), label: "update",selectedIcon: Icon(Icons.notifications)),),
             NavigationDestination(icon: Icon(Icons.shopping_cart), label: "product",selectedIcon: Icon(Icons.shopping_cart),),
             NavigationDestination(icon: Icon(Icons.favorite), label: "favorite",selectedIcon: Icon(Icons.favorite),),
             NavigationDestination(icon: Icon(Icons.person), label: "profile",)
@@ -73,7 +73,7 @@ class _Homescreens extends ConsumerState<Homescreens>{
           backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.scaffoldDarkMode
               : AppColors.scaffoldLightMode,
-          height: 50,
+          height: 60,
           indicatorColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.secondaryButtonDarkMode
               : Colors.lightBlueAccent.shade100,
